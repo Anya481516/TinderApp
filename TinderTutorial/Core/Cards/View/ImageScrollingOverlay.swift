@@ -23,7 +23,7 @@ struct ImageScrollingOverlay: View {
             updateImageIndex(true)
           }
       }
-      .foregroundStyle(.white.opacity(0.1))
+      .foregroundStyle(.white.opacity(0.01))
     }
 }
 

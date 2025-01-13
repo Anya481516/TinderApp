@@ -8,8 +8,14 @@
 import SwiftUI
 
 struct CardStackView: View {
+  @StateObject var viewModel = CardsViewModel(service: CardService())
+
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+      ZStack {
+        ForEach(viewModel.cardsModels) { card in
+          CardView(model: card)
+        }
+      }
     }
 }
 

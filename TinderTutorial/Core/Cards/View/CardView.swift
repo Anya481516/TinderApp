@@ -13,28 +13,25 @@ struct CardView: View {
   @State private var degrees: Double = 0
   @State private var currentImageIndex = 0
 
-  @State private var mockImages = [
-    "meganFox",
-    "meganFox1",
-    "meganFox2",
-  ]
+  let model: CardModel
 
     var body: some View {
       ZStack(alignment: .bottom) {
         ZStack(alignment: .top) {
-          Image(mockImages[currentImageIndex])
+          Image(user.profileImageURL[currentImageIndex])
             .resizable()
             .scaledToFill()
+            .frame(width: SizeConstants.cardWidth, height: SizeConstants.cardHeight)
             .overlay {
-              ImageScrollingOverlay(currentImageIndex: $currentImageIndex, imageCount: mockImages.count)
+              ImageScrollingOverlay(currentImageIndex: $currentImageIndex, imageCount: imageCount)
             }
 
-          CardImageIndicatorView(currentImageIndex: currentImageIndex, imageCount: mockImages.count)
+          CardImageIndicatorView(currentImageIndex: currentImageIndex, imageCount: imageCount)
 
           SwipeActionIndicatorView(xOffset: $xOffset)
         }
 
-        UserInfoView()
+        UserInfoView(user: user)
       }
       .frame(width: SizeConstants.cardWidth, height: SizeConstants.cardHeight)
       .clipShape(RoundedRectangle(cornerRadius: 10))
@@ -50,6 +47,33 @@ struct CardView: View {
 }
 
 private extension CardView {
+  var user: User {
+    return model.user
+  }
+
+  var imageCount: Int {
+    return user.profileImageURL.count
+  }
+}
+
+private extension CardView {
+  func returnToCenter() {
+    xOffset = 0
+    degrees = 0
+  }
+
+  func swipeRight() {
+    xOffset = 500
+    degrees = 12
+  }
+
+  func swipeLeft() {
+    xOffset = -500
+    degrees = -12
+  }
+}
+
+private extension CardView {
   func onDragChanged(_ value: _ChangedGesture<DragGesture>.Value) {
     xOffset = value.translation.width
     degrees = Double(value.translation.width / 25)
@@ -58,12 +82,18 @@ private extension CardView {
     let width = value.translation.width
 
     if abs(width) <= abs(SizeConstants.screenCutoff) {
-      xOffset = 0
-      degrees = 0
+      returnToCenter()
+      return
+    }
+
+    if width >= SizeConstants.screenCutoff {
+      swipeRight()
+    } else {
+      swipeLeft()
     }
   }
 }
 
 #Preview {
-    CardView()
+  CardView(model: CardModel(user: MockData.users[1]))
 }

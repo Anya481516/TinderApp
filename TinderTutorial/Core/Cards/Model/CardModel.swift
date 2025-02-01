@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct CardModel {
+struct CardModel: Hashable {
   let user: User
 }
 

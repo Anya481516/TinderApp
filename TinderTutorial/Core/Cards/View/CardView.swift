@@ -8,18 +8,19 @@
 import SwiftUI
 
 struct CardView: View {
-
   @ObservedObject var viewModel: CardsViewModel
+
   @State private var xOffset: CGFloat = 0
   @State private var degrees: Double = 0
   @State private var currentImageIndex = 0
+  @State private var showProfileModel = false
 
   let model: CardModel
 
     var body: some View {
       ZStack(alignment: .bottom) {
         ZStack(alignment: .top) {
-          Image(user.profileImageURL[currentImageIndex])
+          Image(user.profileImageURLs[currentImageIndex])
             .resizable()
             .scaledToFill()
             .frame(width: SizeConstants.cardWidth, height: SizeConstants.cardHeight)
@@ -32,7 +33,10 @@ struct CardView: View {
           SwipeActionIndicatorView(xOffset: $xOffset)
         }
 
-        UserInfoView(user: user)
+        UserInfoView(showProfileModel: $showProfileModel, user: user)
+      }
+      .fullScreenCover(isPresented: $showProfileModel) {
+        UserProfileView(user: user)
       }
       .onReceive(viewModel.$buttonSwipeAction, perform: { action in
         onReceiveSwipeAction(action)
@@ -56,7 +60,7 @@ private extension CardView {
   }
 
   var imageCount: Int {
-    return user.profileImageURL.count
+    return user.profileImageURLs.count
   }
 }
 
